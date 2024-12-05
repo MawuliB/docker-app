@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub User Profile API</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #e3f2fd;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #0d47a1;
+      }
+      .container {
+        text-align: center;
+        background: #ffffff;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      h1 {
+        color: #1565c0;
+      }
+      p {
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      a {
+        color: #1565c0;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .input-container {
+        margin-top: 20px;
+      }
+      input[type="text"] {
+        padding: 10px;
+        width: 70%;
+        border: 1px solid #1565c0;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #1565c0;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #0d47a1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to the GitHub User Profile API</h1>
+      <p>
+        Add <code>/ + [GitHub username]</code> to the URL to get the information
+        in the user's GitHub profile, plus a list of their followers and
+        following.
+      </p>
+      <p>Example: <a href="/octocat" target="_blank">/octocat</a></p>
+      <div class="input-container">
+        <input type="text" id="username" placeholder="Enter GitHub username" />
+        <button onclick="searchUser()">Search</button>
+      </div>
+    </div>
+    <script>
+      function searchUser() {
+        const username = document.getElementById("username").value.trim();
+        if (username) {
+          const url = `/${username}`;
+          const link = document.createElement("a");
+          link.href = url;
+          link.target = "_blank";
+          link.click();
+        } else {
+          alert("Please enter a GitHub username.");
+        }
+      }
+    </script>
+  </body>
+</html>
