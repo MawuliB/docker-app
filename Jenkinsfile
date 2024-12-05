@@ -35,8 +35,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = credentials('DOCKER_HUB_USERNAME')
-        DOCKER_HUB_PASSWORD = credentials('DOCKER_HUB_PASSWORD')
         APP_NAME = 'docker-app'
         IMAGE_NAME = 'mawulib/docker-app'
         GIT_SHA = gitSha()
