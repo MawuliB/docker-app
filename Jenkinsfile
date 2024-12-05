@@ -10,6 +10,10 @@ def deleteEnv() {
     sh 'rm -rf .venv'
 }
 
+def gitSha() {
+    sh 'git rev-parse HEAD'
+}
+
 def loginToDockerHub() {
     withCredentials([usernamePassword(credentialsId: 'docker-hub-cred', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
         sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
@@ -17,8 +21,8 @@ def loginToDockerHub() {
 }
 
 def buildAndPushToDockerHub() {
-    sh "docker build -t ${IMAGE_NAME}:latest ."
-    sh "docker push ${IMAGE_NAME}:latest"
+    sh "docker build -t ${IMAGE_NAME}:${GIT_SHA} ."
+    sh "docker push ${IMAGE_NAME}:${GIT_SHA}"
 }
 
 def cleanup() {
@@ -33,13 +37,17 @@ pipeline {
         DOCKER_HUB_PASSWORD = credentials('DOCKER_HUB_PASSWORD')
         APP_NAME = 'docker-app'
         IMAGE_NAME = 'mawulib/docker-app'
+        GIT_SHA = gitSha()
     }
 
     stages {
         stage('VCSCheckout') {
             steps {
-                git url: 'https://github.com/MawuliB/docker-app.git', branch: 'main'
+                withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                    git url: 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/MawuliB/docker-app.git', branch: 'main'
+                }
                 sh 'ls -l'
+                createEnv()
             }
         }
 
@@ -60,7 +68,7 @@ pipeline {
             steps {
                 sshagent(['ec2-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@44.204.192.188 "docker pull ${IMAGE_NAME}:latest && docker run -d -p 5000:5000 ${IMAGE_NAME}:latest"
+                        ssh -o StrictHostKeyChecking=no ubuntu@44.204.192.188 "docker pull ${IMAGE_NAME}:${GIT_SHA} && docker run -d -p 5000:5000 ${IMAGE_NAME}:${GIT_SHA}"
                     '''
                 }
             }
