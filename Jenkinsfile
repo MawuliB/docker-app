@@ -48,7 +48,6 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
                     git url: 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/MawuliB/docker-app.git', branch: 'main'
                 }
-                sh 'ls -l'
                 createEnv()
             }
         }
@@ -87,7 +86,6 @@ pipeline {
     post {
         always {
             sh 'echo "Pipeline completed"'
-            cleanup()
         }
         success {
             sh 'echo "Pipeline completed successfully for ${APP_NAME} : )"'
