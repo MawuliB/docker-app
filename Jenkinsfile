@@ -39,8 +39,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                createEnv()
-                sh 'flake8 app.py'
+                sh '. .venv/bin/activate && flake8 app.py'
             }
         }
 
