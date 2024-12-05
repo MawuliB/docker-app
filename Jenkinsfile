@@ -39,7 +39,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh '. .venv/bin/activate && flake8 app.py'
+                sh '. .venv/bin/activate && flake8 main.py'
             }
         }
 
