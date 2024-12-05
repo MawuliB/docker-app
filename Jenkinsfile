@@ -59,7 +59,9 @@ pipeline {
         stage('Deployment') {
             steps {
                 sshagent(['ec2-ssh-key']) {
-                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@44.204.192.188 "docker pull ${imageName}:latest && docker run -d -p 5000:5000 ${imageName}:latest"'
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@44.204.192.188 "docker pull ${IMAGE_NAME}:latest && docker run -d -p 5000:5000 ${IMAGE_NAME}:latest"
+                    '''
                 }
             }
         }
