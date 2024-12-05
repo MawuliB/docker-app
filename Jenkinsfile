@@ -11,7 +11,6 @@ def createEnv() {
 
 def deleteEnv() {
     sh 'echo "Deleting environment"'
-    sh 'deactivate'
     sh 'rm -rf .venv'
 }
 
@@ -42,7 +41,6 @@ pipeline {
             steps {
                 createEnv()
                 sh 'flake8 app.py'
-                deleteEnv()
             }
         }
 
@@ -63,6 +61,7 @@ pipeline {
 
         stage('Cleanup') {
             steps {
+                deleteEnv()
                 cleanup()
             }
         }
@@ -71,7 +70,6 @@ pipeline {
     post {
         always {
             sh 'echo "Pipeline completed"'
-            deleteEnv()
             cleanup()
         }
         success {
