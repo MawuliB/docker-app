@@ -11,7 +11,7 @@ def deleteEnv() {
 }
 
 def gitSha() {
-    sh 'git rev-parse HEAD'
+    return sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
 }
 
 def loginToDockerHub() {
@@ -21,8 +21,10 @@ def loginToDockerHub() {
 }
 
 def buildAndPushToDockerHub() {
-    sh "docker build -t ${IMAGE_NAME}:${GIT_SHA} ."
-    sh "docker push ${IMAGE_NAME}:${GIT_SHA}"
+    sh '''
+        docker build -t ${IMAGE_NAME}:${GIT_SHA} .
+        docker push ${IMAGE_NAME}:${GIT_SHA}
+    '''
 }
 
 def cleanup() {
