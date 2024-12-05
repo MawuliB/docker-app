@@ -6,8 +6,7 @@ def createEnv() {
     sh 'echo "Creating environment"'
     sh 'python3 -m venv .venv'
     sh 'chmod +x .venv/bin/activate'
-    sh '. .venv/bin/activate'
-    sh 'pip install -r requirements.txt'
+    sh '. .venv/bin/activate && pip install -r requirements.txt'
 }
 
 def deleteEnv() {
@@ -66,6 +65,20 @@ pipeline {
             steps {
                 cleanup()
             }
+        }
+    }
+
+    post {
+        always {
+            sh 'echo "Pipeline completed"'
+            deleteEnv()
+            cleanup()
+        }
+        success {
+            sh 'echo "Pipeline completed successfully"'
+        }
+        failure {
+            sh 'echo "Pipeline completed with errors"'
         }
     }
 }
