@@ -1,5 +1,3 @@
-def appName = 'github-project'
-
 def createEnv() {
     sh 'echo "Creating environment"'
     sh 'python3 -m venv .venv'
@@ -80,10 +78,10 @@ pipeline {
             cleanup()
         }
         success {
-            sh 'echo "Pipeline completed successfully"'
+            sh 'echo "Pipeline completed successfully for ${APP_NAME} : )"'
         }
         failure {
-            sh 'echo "Pipeline completed with errors"'
+            sh 'echo "Pipeline completed with errors for ${APP_NAME} : ("'
         }
     }
 }
