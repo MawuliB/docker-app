@@ -1,7 +1,5 @@
 def appName = 'github-project'
 
-def imageName = 'mawulib/docker-app'
-
 def createEnv() {
     sh 'echo "Creating environment"'
     sh 'python3 -m venv .venv'
@@ -19,8 +17,8 @@ def loginToDockerHub() {
 }
 
 def buildAndPushToDockerHub() {
-    sh "docker build -t ${imageName}:latest ."
-    sh "docker push ${imageName}:latest"
+    sh "docker build -t ${IMAGE_NAME}:latest ."
+    sh "docker push ${IMAGE_NAME}:latest"
 }
 
 def cleanup() {
@@ -33,6 +31,8 @@ pipeline {
     environment {
         DOCKER_HUB_USERNAME = credentials('DOCKER_HUB_USERNAME')
         DOCKER_HUB_PASSWORD = credentials('DOCKER_HUB_PASSWORD')
+        APP_NAME = 'docker-app'
+        IMAGE_NAME = 'mawulib/docker-app'
     }
 
     stages {
