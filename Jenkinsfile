@@ -15,7 +15,7 @@ def deleteEnv() {
 }
 
 def loginToDockerHub() {
-    sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
+    sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
 }
 
 def buildAndPushToDockerHub() {
@@ -29,6 +29,12 @@ def cleanup() {
 
 pipeline {
     agent any
+
+    environment {
+        DOCKER_HUB_USERNAME = credentials('DOCKER_HUB_USERNAME')
+        DOCKER_HUB_PASSWORD = credentials('DOCKER_HUB_PASSWORD')
+    }
+
     stages {
         stage('VCSCheckout') {
             steps {
