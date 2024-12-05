@@ -5,7 +5,8 @@ def imageName = 'mawulib/docker-app'
 def createEnv() {
     sh 'echo "Creating environment"'
     sh 'python3 -m venv .venv'
-    sh '.venv/bin/activate'
+    sh 'chmod +x .venv/bin/activate'
+    sh '. .venv/bin/activate'
     sh 'pip install -r requirements.txt'
 }
 
