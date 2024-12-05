@@ -53,13 +53,13 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Testing') {
             steps {
                 sh '. .venv/bin/activate && flake8 main.py'
             }
         }
 
-        stage('Build') {
+        stage('Building') {
             steps {
                 loginToDockerHub()
                 buildAndPushToDockerHub()
