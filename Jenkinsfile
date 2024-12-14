@@ -32,7 +32,9 @@ def cleanup() {
 }
 
 pipeline {
-    agent any
+    agent {
+        label 'agent1'
+    }
 
     environment {
         APP_NAME = 'docker-app'
