@@ -67,7 +67,9 @@ pipeline {
         stage("SonarQube analysis") {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh 'sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
+                    withEnv(["JAVA_HOME=${tool 'JDK17'}", "PATH=${tool 'JDK17'}/bin:${env.PATH}"]) {
+                        sh 'sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
+                    }
                 }
             }
         }
