@@ -61,7 +61,7 @@ pipeline {
         stage("SonarQube analysis") {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh '. .venv/bin/activate && sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
+                    sh 'sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
                 }
             }
         }
