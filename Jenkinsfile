@@ -37,14 +37,14 @@ pipeline {
     }
     
     tools {
-        jdk 'jdk17'
+        jdk 'jdk21'
     }
 
     environment {
         APP_NAME = 'docker-app'
         IMAGE_NAME = 'mawulib/docker-app'
         GIT_SHA = gitSha()
-        JAVA_HOME = tool 'jdk17'
+        JAVA_HOME = tool 'jdk21'
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
