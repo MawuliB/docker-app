@@ -96,10 +96,10 @@ pipeline {
             cleanWs()
         }
         success {
-            sh 'echo "Pipeline completed successfully for ${APP_NAME} : )"'
+            sh 'echo "Pipeline completed successfully for ${APP_NAME} :)"'
         }
         failure {
-            sh 'echo "Pipeline completed with errors for ${APP_NAME} : ("'
+            sh 'echo "Pipeline completed with errors for ${APP_NAME} :("'
         }
     }
 }
