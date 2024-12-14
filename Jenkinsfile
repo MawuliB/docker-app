@@ -83,7 +83,7 @@ pipeline {
 
     post {
         always {
-            sh 'echo "Pipeline completed"'
+            cleanWs()
         }
         success {
             sh 'echo "Pipeline completed successfully for ${APP_NAME} : )"'
