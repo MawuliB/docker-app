@@ -2,7 +2,7 @@ import requests
 from flask import Flask, render_template
 
 url = "https://api.github.com/users/"
-USER_NOT_FOUND = "User not found 😥"
+USER_NOT_FOUND = "User not found 😥."
 
 app = Flask(__name__)
 
