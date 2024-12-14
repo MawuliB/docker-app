@@ -67,9 +67,11 @@ pipeline {
         stage("SonarQube analysis") {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    withEnv(["JAVA_HOME=${tool 'jdk17'}", "PATH=${tool 'jdk17'}/bin:${env.PATH}"]) {
-                        sh 'sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
-                    }
+                    sh """
+                        export JAVA_HOME=${tool 'jdk17'}
+                        export PATH=${tool 'jdk17'}/bin:${PATH}
+                        sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt
+                    """
                 }
             }
         }
