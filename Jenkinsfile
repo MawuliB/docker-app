@@ -61,11 +61,7 @@ pipeline {
         stage("SonarQube analysis") {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh 'python3 -m venv sonarqube-env'
-                    sh '. sonarqube-env/bin/activate && pip install -r requirements.txt'
-                    sh 'sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
-                    sh 'deactivate'
-                    sh 'rm -rf sonarqube-env'
+                    sh '. .venv/bin/activate && sonar-scanner -Dsonar.projectKey=docker-app -Dsonar.sources=. -Dsonar.host.url=http://sonar-server.free-sns.live -Dsonar.login=sonarqube -Dsonar.python.flake8.reportPaths=flake8-report.txt'
                 }
             }
         }
