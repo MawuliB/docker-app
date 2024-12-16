@@ -46,14 +46,14 @@ pipeline {
         GIT_SHA = gitSha()
         JAVA_HOME = tool 'jdk21'
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
-        BRANCH_NAME = env.BRANCH_NAME
+        BRANCH_NAME = "${env.BRANCH_NAME}"
     }
 
     stages {
         stage('VCSCheckout') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    git url: 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/MawuliB/docker-app.git', branch: ${BRANCH_NAME}
+                    git url: 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/MawuliB/docker-app.git', branch: "${BRANCH_NAME}"
                 }
                 createEnv()
             }
