@@ -32,27 +32,75 @@ def cleanup() {
 }
 
 pipeline {
-    agent any
+    agent {
+        label 'agent1'
+    }
+    
+    tools {
+        jdk 'jdk21'
+    }
 
     environment {
         APP_NAME = 'docker-app'
         IMAGE_NAME = 'mawulib/docker-app'
         GIT_SHA = gitSha()
+        JAVA_HOME = tool 'jdk21'
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+        BRANCH_NAME = "${env.BRANCH_NAME}"
     }
 
     stages {
-        stage('VCSCheckout') {
+        stage('Testing') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    git url: 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/MawuliB/docker-app.git', branch: 'main'
-                }
                 createEnv()
+                sh '. .venv/bin/activate && flake8 main.py'
             }
         }
 
-        stage('Testing') {
+        stage("SonarQube analysis") {
             steps {
-                sh '. .venv/bin/activate && flake8 main.py'
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    withSonarQubeEnv('sonarqube') {
+                        withEnv(["JAVA_HOME=${tool 'jdk17'}", 
+                                "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
+                            sh '''
+                                . .venv/bin/activate
+
+                                # Clean up any existing report files
+                                rm -f report-task.txt
+                                rm -rf .scannerwork
+                                
+                                # Create empty coverage and test reports if no tests exist
+                                if [ -n "$(find . -name '*_test.py' -o -name '*_tests.py')" ]; then
+                                    python -m pytest --cov=. --cov-report=xml:coverage.xml --junitxml=test-results.xml || true
+                                else
+                                    echo '' > coverage.xml
+                                    echo '' > test-results.xml
+                                fi
+                                
+                                # Run flake8 only on Python files
+                                flake8 $(find . -name "*.py" ! -path "./.venv/*") --output-file=flake8-report.txt || true
+                                
+                                # Run sonar-scanner with additional parameters
+                                sonar-scanner \
+                                    -Dsonar.host.url=https://sonar-server.free-sns.live \
+                                    -Dsonar.projectKey=docker-app \
+                                    -Dsonar.projectBaseDir=${WORKSPACE} \
+                                    -Dsonar.sources=. \
+                                    -Dsonar.python.version=3.9 \
+                                    -Dsonar.qualitygate.wait=true \
+                                    -Dsonar.python.flake8.reportPaths=${WORKSPACE}/flake8-report.txt \
+                                    -Dsonar.sourceEncoding=UTF-8 \
+                                    -Dsonar.python.coverage.reportPaths=${WORKSPACE}/coverage.xml \
+                                    -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
+                                    -Dsonar.python.xunit.reportPath=${WORKSPACE}/test-results.xml \
+                                    -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/** \
+                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork \
+                                    -Dsonar.branch.name=${env.BRANCH_NAME}
+                            '''
+                        }
+                    }
+                }
             }
         }
 
@@ -67,7 +115,7 @@ pipeline {
             steps {
                 sshagent(['ec2-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@44.204.192.188 "docker pull ${IMAGE_NAME}:${GIT_SHA} && docker stop ${APP_NAME} || true && docker rm ${APP_NAME} || true && docker run -d -p 5000:5000 --name ${APP_NAME} ${IMAGE_NAME}:${GIT_SHA}"
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.91.239.93 "docker pull ${IMAGE_NAME}:${GIT_SHA} && docker stop ${APP_NAME} || true && docker rm ${APP_NAME} || true && docker run -d -p 5000:5000 --name ${APP_NAME} ${IMAGE_NAME}:${GIT_SHA}"
                     '''
                 }
             }
@@ -83,13 +131,13 @@ pipeline {
 
     post {
         always {
-            sh 'echo "Pipeline completed"'
+            cleanWs()
         }
         success {
-            sh 'echo "Pipeline completed successfully for ${APP_NAME} : )"'
+            sh 'echo "Pipeline completed successfully for ${APP_NAME} :)"'
         }
         failure {
-            sh 'echo "Pipeline completed with errors for ${APP_NAME} : ("'
+            sh 'echo "Pipeline completed with errors for ${APP_NAME} :("'
         }
     }
 }
