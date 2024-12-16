@@ -50,17 +50,9 @@ pipeline {
     }
 
     stages {
-        stage('VCSCheckout') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    git url: 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/MawuliB/docker-app.git', branch: "${BRANCH_NAME}"
-                }
-                createEnv()
-            }
-        }
-
         stage('Testing') {
             steps {
+                createEnv()
                 sh '. .venv/bin/activate && flake8 main.py'
             }
         }
@@ -103,7 +95,8 @@ pipeline {
                                     -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
                                     -Dsonar.python.xunit.reportPath=${WORKSPACE}/test-results.xml \
                                     -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/** \
-                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork
+                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork \
+                                    -Dsonar.branch.name=${env.BRANCH_NAME}
                             '''
                         }
                     }
