@@ -67,8 +67,6 @@ pipeline {
         stage("SonarQube analysis") {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    withEnv(["JAVA_HOME=${tool 'jdk17'}", 
-                            "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
                         sh '''
                             sonar-scanner \
                                 -Dsonar.projectKey=docker-app \
@@ -76,7 +74,6 @@ pipeline {
                                 -Dsonar.python.version=3.x \
                                 -Dsonar.qualitygate.wait=true
                         '''
-                    }
                 }
             }
         }
