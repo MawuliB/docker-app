@@ -74,7 +74,8 @@ pipeline {
                                 -Dsonar.projectKey=docker-app \
                                 -Dsonar.sources=. \
                                 -Dsonar.python.version=3.x \
-                                -Dsonar.qualitygate.wait=true
+                                -Dsonar.qualitygate.wait=true \
+                                -Dsonar.python.flake8.reportPaths=flake8-report.txt
                         '''
                     }
                 }
