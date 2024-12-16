@@ -95,8 +95,7 @@ pipeline {
                                     -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
                                     -Dsonar.python.xunit.reportPath=${WORKSPACE}/test-results.xml \
                                     -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/** \
-                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork \
-                                    -Dsonar.branch.name=${env.BRANCH_NAME}
+                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork
                             '''
                         }
                     }
