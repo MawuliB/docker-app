@@ -71,9 +71,16 @@ pipeline {
                         withEnv(["JAVA_HOME=${tool 'jdk17'}", 
                                 "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
                             sh '''
-                                . .venv/bin/activate &&
-                                    flake8 main.py --output-file=flake8-report.txt &&
-                                    sonar-scanner \
+                                . .venv/bin/activate
+                                
+                                # Run tests and generate coverage report
+                                python -m pytest --cov=. --cov-report=xml:coverage.xml --junitxml=test-results.xml
+                                
+                                # Run flake8
+                                flake8 . --output-file=flake8-report.txt
+                                
+                                # Run sonar-scanner
+                                sonar-scanner \
                                     -Dsonar.projectKey=docker-app \
                                     -Dsonar.sources=. \
                                     -Dsonar.python.version=3.9 \
@@ -82,7 +89,8 @@ pipeline {
                                     -Dsonar.sourceEncoding=UTF-8 \
                                     -Dsonar.python.coverage.reportPaths=coverage.xml \
                                     -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
-                                    -Dsonar.python.xunit.reportPath=test-results.xml
+                                    -Dsonar.python.xunit.reportPath=test-results.xml \
+                                    -Dsonar.report.export.path=sonar-report.json
                             '''
                         }
                     }
