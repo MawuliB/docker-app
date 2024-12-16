@@ -66,17 +66,30 @@ pipeline {
 
         stage("SonarQube analysis") {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    withEnv(["JAVA_HOME=${tool 'jdk17'}", 
-                            "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
-                        sh '''
-                            sonar-scanner \
-                                -Dsonar.projectKey=docker-app \
-                                -Dsonar.sources=. \
-                                -Dsonar.python.version=3.x \
-                                -Dsonar.qualitygate.wait=true \
-                                -Dsonar.python.flake8.reportPaths=flake8-report.txt
-                        '''
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    withSonarQubeEnv('sonarqube') {
+                        withEnv(["JAVA_HOME=${tool 'jdk17'}", 
+                                "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
+                            sh '''
+                                # Install flake8 if not already installed
+                                pip install flake8
+                                
+                                # Run flake8 and generate report
+                                flake8 . --output-file=flake8-report.txt
+                                
+                                # Run sonar-scanner with specific Python version
+                                sonar-scanner \
+                                    -Dsonar.projectKey=docker-app \
+                                    -Dsonar.sources=. \
+                                    -Dsonar.python.version=3.9 \
+                                    -Dsonar.qualitygate.wait=true \
+                                    -Dsonar.python.flake8.reportPaths=flake8-report.txt \
+                                    -Dsonar.sourceEncoding=UTF-8 \
+                                    -Dsonar.python.coverage.reportPaths=coverage.xml \
+                                    -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
+                                    -Dsonar.python.xunit.reportPath=test-results.xml
+                            '''
+                        }
                     }
                 }
             }
