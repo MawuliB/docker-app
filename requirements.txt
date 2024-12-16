@@ -1,3 +1,5 @@
 flask
 requests
 flake8
+pytest
+pytest-cov
