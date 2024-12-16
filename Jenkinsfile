@@ -90,7 +90,7 @@ pipeline {
                                 flake8 $(find . -name "*.py" ! -path "./.venv/*") --output-file=flake8-report.txt || true
                                 
                                 # Run sonar-scanner with additional parameters
-                                sonar-scanner -X \
+                                sonar-scanner \
                                     -Dsonar.host.url=https://sonar-server.free-sns.live \
                                     -Dsonar.projectKey=docker-app \
                                     -Dsonar.projectBaseDir=${WORKSPACE} \
