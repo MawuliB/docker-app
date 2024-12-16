@@ -73,6 +73,10 @@ pipeline {
                                 "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
                             sh '''
                                 . .venv/bin/activate
+
+                                # Clean up any existing report files
+                                rm -f report-task.txt
+                                rm -rf .scannerwork
                                 
                                 # Create empty coverage and test reports if no tests exist
                                 if [ -n "$(find . -name '*_test.py' -o -name '*_tests.py')" ]; then
