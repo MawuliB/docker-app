@@ -71,14 +71,9 @@ pipeline {
                         withEnv(["JAVA_HOME=${tool 'jdk17'}", 
                                 "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
                             sh '''
-                                # Install flake8 if not already installed
-                                pip install flake8
-                                
-                                # Run flake8 and generate report
-                                flake8 . --output-file=flake8-report.txt
-                                
-                                # Run sonar-scanner with specific Python version
-                                sonar-scanner \
+                                . .venv/bin/activate &&
+                                    flake8 main.py --output-file=flake8-report.txt &&
+                                    sonar-scanner \
                                     -Dsonar.projectKey=docker-app \
                                     -Dsonar.sources=. \
                                     -Dsonar.python.version=3.9 \
