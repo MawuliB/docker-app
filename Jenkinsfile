@@ -78,25 +78,28 @@ pipeline {
                                 if [ -n "$(find . -name '*_test.py' -o -name '*_tests.py')" ]; then
                                     python -m pytest --cov=. --cov-report=xml:coverage.xml --junitxml=test-results.xml || true
                                 else
-                                    echo '<?xml version="1.0" encoding="UTF-8"?><coverage version="1"></coverage>' > coverage.xml
-                                    echo '<?xml version="1.0" encoding="UTF-8"?><testsuites></testsuites>' > test-results.xml
+                                    echo '' > coverage.xml
+                                    echo '' > test-results.xml
                                 fi
                                 
                                 # Run flake8 only on Python files
                                 flake8 $(find . -name "*.py" ! -path "./.venv/*") --output-file=flake8-report.txt || true
                                 
-                                # Run sonar-scanner
+                                # Run sonar-scanner with additional parameters
                                 sonar-scanner -X \
+                                    -Dsonar.host.url=https://sonar-server.free-sns.live \
                                     -Dsonar.projectKey=docker-app \
+                                    -Dsonar.projectBaseDir=${WORKSPACE} \
                                     -Dsonar.sources=. \
                                     -Dsonar.python.version=3.9 \
                                     -Dsonar.qualitygate.wait=true \
-                                    -Dsonar.python.flake8.reportPaths=flake8-report.txt \
+                                    -Dsonar.python.flake8.reportPaths=${WORKSPACE}/flake8-report.txt \
                                     -Dsonar.sourceEncoding=UTF-8 \
-                                    -Dsonar.python.coverage.reportPaths=coverage.xml \
+                                    -Dsonar.python.coverage.reportPaths=${WORKSPACE}/coverage.xml \
                                     -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
-                                    -Dsonar.python.xunit.reportPath=test-results.xml \
-                                    -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/**
+                                    -Dsonar.python.xunit.reportPath=${WORKSPACE}/test-results.xml \
+                                    -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/** \
+                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork
                             '''
                         }
                     }
