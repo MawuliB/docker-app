@@ -1,12 +1,13 @@
 import requests
 from flask import Flask, render_template
+from flask_wtf import CSRFProtect
 
 url = "https://api.github.com/users/"
 USER_NOT_FOUND = "User not found 😥."
 
 app = Flask(__name__)
 csrf = CSRFProtect()
-csrf.init_app(app) # Compliant
+csrf.init_app(app)
 
 
 def fetch_user(username):
