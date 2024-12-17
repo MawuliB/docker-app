@@ -90,7 +90,7 @@ def test_fetch_following_not_found(mock_get):
     mock_get.return_value = mock_response(404, None)
     result = fetch_following('nonexistentuser')
     assert result == []
-    
+
 
 @patch('main.fetch_user')
 @patch('main.fetch_followers')
