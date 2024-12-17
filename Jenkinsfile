@@ -92,6 +92,9 @@ pipeline {
                                 -Dsonar.python.version=3.9 \
                                 -Dsonar.qualitygate.wait=true \
                                 -Dsonar.verbose=true
+
+                                rm -rf .scannerwork
+                                rm -f report-task.txt
                         '''
                     }
                 }

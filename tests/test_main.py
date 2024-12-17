@@ -3,10 +3,13 @@ from unittest.mock import patch
 from main import app, fetch_user, fetch_followers, fetch_following, USER_NOT_FOUND
 
 @pytest.fixture
+
+
 def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
+
 
 # Mock response for successful user fetch
 MOCK_USER_DATA = {
@@ -29,8 +32,10 @@ def mock_response(status_code=200, json_data=None):
         def __init__(self, json_data, status_code):
             self.json_data = json_data
             self.status_code = status_code
+
         def json(self):
             return self.json_data
+            
     return MockResponse(json_data, status_code)
 
 
@@ -80,7 +85,6 @@ def test_user_profile_success(mock_following, mock_followers, mock_user, client)
     mock_user.return_value = MOCK_USER_DATA
     mock_followers.return_value = ['follower1', 'follower2']
     mock_following.return_value = ['following1', 'following2']
-    
     response = client.get('/testuser')
     assert response.status_code == 200
     data = response.get_json()
