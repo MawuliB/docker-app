@@ -1,4 +1,5 @@
 flask
+Flask-WTF
 requests
 flake8
 pytest
