@@ -53,55 +53,51 @@ pipeline {
         stage('Testing') {
             steps {
                 createEnv()
-                sh '. .venv/bin/activate && flake8 main.py'
+                sh '''
+                . .venv/bin/activate
+                python -m pytest -v --cov=. --cov-report=xml:coverage.xml --cov-report=term-missing --junitxml=test-results.xml
+                # Run flake8
+                flake8 --max-line-length=120 \
+                    --exclude=.venv,__pycache__,build,dist \
+                    --output-file=flake8-report.txt \
+                    . || true
+                '''
             }
         }
 
-        stage("SonarQube analysis") {
-            steps {
-                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    withSonarQubeEnv('sonarqube') {
-                        withEnv(["JAVA_HOME=${tool 'jdk17'}", 
-                                "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
-                            sh '''
-                                . .venv/bin/activate
-
-                                # Clean up any existing report files
-                                rm -f report-task.txt
-                                rm -rf .scannerwork
-                                
-                                # Create empty coverage and test reports if no tests exist
-                                if [ -n "$(find . -name '*_test.py' -o -name '*_tests.py')" ]; then
-                                    python -m pytest --cov=. --cov-report=xml:coverage.xml --junitxml=test-results.xml || true
-                                else
-                                    echo '' > coverage.xml
-                                    echo '' > test-results.xml
-                                fi
-                                
-                                # Run flake8 only on Python files
-                                flake8 $(find . -name "*.py" ! -path "./.venv/*") --output-file=flake8-report.txt || true
-                                
-                                # Run sonar-scanner with additional parameters
-                                sonar-scanner \
-                                    -Dsonar.host.url=https://sonar-server.free-sns.live \
-                                    -Dsonar.projectKey=docker-app \
-                                    -Dsonar.projectBaseDir=${WORKSPACE} \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.python.version=3.9 \
-                                    -Dsonar.qualitygate.wait=true \
-                                    -Dsonar.python.flake8.reportPaths=${WORKSPACE}/flake8-report.txt \
-                                    -Dsonar.sourceEncoding=UTF-8 \
-                                    -Dsonar.python.coverage.reportPaths=${WORKSPACE}/coverage.xml \
-                                    -Dsonar.test.inclusions=**/*_test.py,**/*_tests.py \
-                                    -Dsonar.python.xunit.reportPath=${WORKSPACE}/test-results.xml \
-                                    -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/** \
-                                    -Dsonar.working.directory=${WORKSPACE}/.scannerwork
-                            '''
-                        }
+    stage("SonarQube analysis") {
+        steps {
+            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                withSonarQubeEnv('sonarqube') {
+                    withEnv(["JAVA_HOME=${tool 'jdk17'}", 
+                            "PATH=${tool 'jdk17'}/bin:/opt/sonar-scanner/bin:${env.PATH}"]) {
+                        sh '''
+                            . .venv/bin/activate
+                            
+                            # Run sonar-scanner using existing reports
+                            sonar-scanner \
+                                -Dsonar.host.url=https://sonar-server.free-sns.live \
+                                -Dsonar.projectKey=docker-app \
+                                -Dsonar.projectName=docker-app \
+                                -Dsonar.projectVersion=1.0 \
+                                -Dsonar.sources=. \
+                                -Dsonar.tests=test_*.py \
+                                -Dsonar.python.coverage.reportPaths=coverage.xml \
+                                -Dsonar.python.xunit.reportPath=test-results.xml \
+                                -Dsonar.python.flake8.reportPaths=flake8-report.txt \
+                                -Dsonar.sourceEncoding=UTF-8 \
+                                -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/**,test_*.py \
+                                -Dsonar.coverage.exclusions=test_*.py \
+                                -Dsonar.test.inclusions=test_*.py \
+                                -Dsonar.python.version=3.9 \
+                                -Dsonar.qualitygate.wait=true \
+                                -Dsonar.verbose=true
+                        '''
                     }
                 }
             }
         }
+    }
 
         stage('Building') {
             steps {
