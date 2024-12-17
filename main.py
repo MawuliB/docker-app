@@ -5,6 +5,8 @@ url = "https://api.github.com/users/"
 USER_NOT_FOUND = "User not found 😥."
 
 app = Flask(__name__)
+csrf = CSRFProtect()
+csrf.init_app(app) # Compliant
 
 
 def fetch_user(username):
@@ -51,4 +53,4 @@ def user_profile(username):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

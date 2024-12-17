@@ -23,6 +23,7 @@ MOCK_FOLLOWERS = [{"login": f"follower{i}"} for i in range(3)]
 # Mock response for following
 MOCK_FOLLOWING = [{"login": f"following{i}"} for i in range(3)]
 
+
 def mock_response(status_code=200, json_data=None):
     class MockResponse:
         def __init__(self, json_data, status_code):
@@ -32,10 +33,12 @@ def mock_response(status_code=200, json_data=None):
             return self.json_data
     return MockResponse(json_data, status_code)
 
+
 def test_home_page(client):
     """Test if home page renders"""
     response = client.get('/')
     assert response.status_code == 200
+
 
 @patch('requests.get')
 def test_fetch_user_success(mock_get):
@@ -44,12 +47,14 @@ def test_fetch_user_success(mock_get):
     result = fetch_user('testuser')
     assert result == MOCK_USER_DATA
 
+
 @patch('requests.get')
 def test_fetch_user_not_found(mock_get):
     """Test user not found"""
     mock_get.return_value = mock_response(404, None)
     result = fetch_user('nonexistentuser')
     assert result == USER_NOT_FOUND
+
 
 @patch('requests.get')
 def test_fetch_followers_success(mock_get):
@@ -58,12 +63,14 @@ def test_fetch_followers_success(mock_get):
     result = fetch_followers('testuser')
     assert result == ['follower0', 'follower1', 'follower2']
 
+
 @patch('requests.get')
 def test_fetch_following_success(mock_get):
     """Test successful following fetch"""
     mock_get.return_value = mock_response(200, MOCK_FOLLOWING)
     result = fetch_following('testuser')
     assert result == ['following0', 'following1', 'following2']
+
 
 @patch('main.fetch_user')
 @patch('main.fetch_followers')
@@ -80,6 +87,7 @@ def test_user_profile_success(mock_following, mock_followers, mock_user, client)
     assert data['login'] == 'testuser'
     assert 'followers_list' in data
     assert 'following_list' in data
+
 
 def test_user_profile_error(client):
     """Test user profile error handling"""

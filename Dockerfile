@@ -40,11 +40,17 @@ WORKDIR /app
 # Copy only the installed dependencies from the builder stage
 COPY --from=builder /install /usr/local
 
+RUN addgroup -S noroot && adduser -S noroot -G noroot
+
 # Copy the application code
-COPY . .
+COPY ./main.py .
+COPY ./templates ./templates
 
 # Expose the application port
 EXPOSE 5000
+
+# Switch to the non-root user
+USER appuser
 
 # Command to run the application
 CMD ["python", "main.py"]
