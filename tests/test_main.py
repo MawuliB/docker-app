@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import patch
 from main import app, fetch_user, fetch_followers, fetch_following, USER_NOT_FOUND
 
+
+# Fixture to create a test client
 @pytest.fixture
-
-
 def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
@@ -35,7 +35,6 @@ def mock_response(status_code=200, json_data=None):
 
         def json(self):
             return self.json_data
-            
     return MockResponse(json_data, status_code)
 
 
