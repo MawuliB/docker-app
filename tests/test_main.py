@@ -69,11 +69,27 @@ def test_fetch_followers_success(mock_get):
 
 
 @patch('requests.get')
+def test_fetch_followers_not_found(mock_get):
+    """Test followers not found"""
+    mock_get.return_value = mock_response(404, None)
+    result = fetch_followers('nonexistentuser')
+    assert result == USER_NOT_FOUND
+
+
+@patch('requests.get')
 def test_fetch_following_success(mock_get):
     """Test successful following fetch"""
     mock_get.return_value = mock_response(200, MOCK_FOLLOWING)
     result = fetch_following('testuser')
     assert result == ['following0', 'following1', 'following2']
+
+
+@patch('requests.get')
+def test_fetch_following_not_found(mock_get):
+    """Test following not found"""
+    mock_get.return_value = mock_response(404, None)
+    result = fetch_following('nonexistentuser')
+    assert result == USER_NOT_FOUND
 
 
 @patch('main.fetch_user')
