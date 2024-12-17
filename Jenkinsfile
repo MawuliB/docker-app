@@ -86,7 +86,7 @@ pipeline {
                                 -Dsonar.python.xunit.reportPath=test-results.xml \
                                 -Dsonar.python.flake8.reportPaths=flake8-report.txt \
                                 -Dsonar.sourceEncoding=UTF-8 \
-                                -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/**,test_*.py \
+                                -Dsonar.exclusions=.venv/**,**/*.pyc,**/__pycache__/**,test_*.py,*.js \
                                 -Dsonar.coverage.exclusions=test_*.py \
                                 -Dsonar.test.inclusions=test_*.py \
                                 -Dsonar.python.version=3.9 \
