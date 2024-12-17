@@ -99,22 +99,22 @@ pipeline {
         }
     }
 
-        stage('Building') {
-            steps {
-                loginToDockerHub()
-                buildAndPushToDockerHub()
-            }
-        }
+        // stage('Building') {
+        //     steps {
+        //         loginToDockerHub()
+        //         buildAndPushToDockerHub()
+        //     }
+        // }
 
-        stage('Deployment') {
-            steps {
-                sshagent(['ec2-ssh-key']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.91.239.93 "docker pull ${IMAGE_NAME}:${GIT_SHA} && docker stop ${APP_NAME} || true && docker rm ${APP_NAME} || true && docker run -d -p 5000:5000 --name ${APP_NAME} ${IMAGE_NAME}:${GIT_SHA}"
-                    '''
-                }
-            }
-        }
+        // stage('Deployment') {
+        //     steps {
+        //         sshagent(['ec2-ssh-key']) {
+        //             sh '''
+        //                 ssh -o StrictHostKeyChecking=no ubuntu@3.91.239.93 "docker pull ${IMAGE_NAME}:${GIT_SHA} && docker stop ${APP_NAME} || true && docker rm ${APP_NAME} || true && docker run -d -p 5000:5000 --name ${APP_NAME} ${IMAGE_NAME}:${GIT_SHA}"
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Cleanup') {
             steps {
