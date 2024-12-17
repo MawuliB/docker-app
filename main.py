@@ -19,22 +19,22 @@ def fetch_user(username):
 
 def fetch_followers(username):
     response = requests.get(url + username + "/followers")
+    if response.status_code != 200:
+        return []
     res = []
-    for followers in response.json():
-        res.append(followers["login"])
-    if response.status_code == 200:
-        return res
-    return USER_NOT_FOUND
+    for follower in response.json():
+        res.append(follower['login'])
+    return res
 
 
 def fetch_following(username):
     response = requests.get(url + username + "/following")
+    if response.status_code != 200:
+        return []
     res = []
     for following in response.json():
-        res.append(following["login"])
-    if response.status_code == 200:
-        return res
-    return USER_NOT_FOUND
+        res.append(following['login'])
+    return res
 
 
 @app.route("/")
