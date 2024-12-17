@@ -81,7 +81,7 @@ pipeline {
                                 -Dsonar.projectName=docker-app \
                                 -Dsonar.projectVersion=1.0 \
                                 -Dsonar.sources=. \
-                                -Dsonar.tests=test_*.py \
+                                -Dsonar.tests=. \
                                 -Dsonar.python.coverage.reportPaths=coverage.xml \
                                 -Dsonar.python.xunit.reportPath=test-results.xml \
                                 -Dsonar.python.flake8.reportPaths=flake8-report.txt \
